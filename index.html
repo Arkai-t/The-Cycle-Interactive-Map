@@ -1,0 +1,1377 @@
+<head>
+  <meta charset="utf-8">
+  <title>Custom maps The Cycle</title>
+  <link rel="stylesheet" href="leaflet/leaflet.css" />
+  <script src="leaflet/leaflet.js"></script>
+  <link rel="stylesheet" href="leaflet.fullscreen-1.6.0/Control.FullScreen.css" />
+  <script src="leaflet.fullscreen-1.6.0/Control.FullScreen.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <style>
+    body{
+      background: no-repeat url("Background.jpg");
+      background-attachment: fixed;
+    }
+    .list-group-mine .list-group-item{
+      background-color: #6c757d00;
+    }
+	</style>
+</head>
+<body>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand">
+              <img src="The-Cycle-Logo.png" width="30" height="30" loading="lazy">
+            </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="About.html">About</a>
+              </li>
+              <li>
+                  <div class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle disabled" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Language
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" >
+                        <a class="dropdown-item" href="#">Français  <img src="Language/fr.png"></a>
+                        <a class="dropdown-item" href="#">English   <img src="Language/en.png"></a>
+                        <a class="dropdown-item" href="#">Español   <img src="Language/es.png"></a>
+                        <a class="dropdown-item" href="#">Deutsch   <img src="Language/de.png"></a>
+                        <a class="dropdown-item" href="#">Polski    <img src="Language/pl.png"></a>
+                        <a class="dropdown-item" href="#">Portugês  <img src="Language/pt-br.png"></a>
+                      </div>
+                    </div>
+              </li>
+            </ul>                      
+          </div>
+      </nav>
+      <br>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        When you want to reset the map or change map, it's better to reload the page and then change the map <br>
+        <p class="font-italic">Totally not my fault</p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="row">
+          <div class="col-md-7">
+            <br>
+            <div class="btn-group" role="group" aria-label="Map example">
+              <button type="button" class="btn btn-dark" title="Bright Sands" onclick="change_to_map01()">Map 01</button>
+              <button type="button" class="btn btn-dark" title="Crescent Falls" onclick="change_to_map02()">Map 02</button>
+            </div>
+            <div class="embed-responsive embed-responsive-1by1">
+              <div class="embed-responsive-item" id="Map" style="width: 1024px; height: 1024px;"></div>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <br><br><br><br>
+            <!--CONTRACTS-->
+            <ul class="list-group list-group-flush list-group-mine">
+              <!--Map Action-->
+              <li class="list-group-item">
+                <button type="button" class="btn btn-dark" onclick="clear_map()">Clear map</button> <!--problem under-->
+                <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">Random map </button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item" onclick="random_map('SOLO')">Solo</a>
+                    <a class="dropdown-item" onclick="random_map('DUO')">Duo</a>
+                    <a class="dropdown-item" onclick="random_map('SQUAD')">Squad</a>
+                  </div>
+                <button type="button" class="btn btn-dark disabled" onclick="download_map()">Download map</button>
+                <div class="form-check form-check-inline text-white">
+                  <input class="form-check-input" type="checkbox" id="unlimited" value="option1">
+                  <label class="form-check-label" for="unlimited" title="No more contracts limits !">Unlimited mode</label>
+                </div>
+                <div class="form-check form-check-inline text-white">
+                  <input class="form-check-input" type="checkbox" id="debug" value="option1">
+                  <label class="form-check-label" for="debug" onclick="debug()">Debug mode</label>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark" onclick="minerals()">Minerals <img src="Contracts/Veltecite.png" width="30" height="30"></button>
+                  <button type="button" class="btn btn-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent"></button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item" onclick="minerals_white()">Add White minerals <img src="Contracts/White_Veltecite.png" width="30" height="30"></a>
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">Hunt <img src="Contracts/Hunt.png" width="30" height="30"></button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item" onclick="hunt_add_1()">Add 1 star</a>
+                    <a class="dropdown-item" onclick="hunt_add_2()">Add 2 stars</a>
+                    <a class="dropdown-item" onclick="hunt_add_3()">Add 3 stars</a>
+                    <a class="dropdown-item" onclick="hunt_add_4()">Add 4 stars</a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-dark" onclick="brightcaps()">Brightcaps <img src="Contracts/Brightcaps.png" width="30" height="30"></button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark" onclick="zeal()">Zeal Shard <img src="Contracts/Zeal.png" width="30" height="30"></button>
+                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu  bg-dark text-white">
+                    <a class="dropdown-item" onclick="zeal_red()">Red Zeal <img src="Contracts/Red_Zeal.png" width="30" height="30"></a>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-dark" onclick="letium()">Letium Gas<img src="Contracts/Letium_Gas.png" width="30" height="30"></button>
+                <br><br>
+                <button type="button" class="btn btn-dark" onclick="drill()">Laser Drill<img src="Contracts/Drill.png" width="30" height="30"></button>
+              </li>
+              <!--Fix contracts-->
+              <li class="list-group-item">
+                <button type="button" class="btn btn-dark" onclick="uplink()" 
+title="To rotate Uplink click on active Uplink
+Click on next and inactive uplink to change rotation sens">Uplink <img src="Contracts/Uplink.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="power_up()">Power Up <img src="Contracts/Power_Up.png" width="30" height="30"></button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark" onclick="drone()">Drone <img src="Contracts/Drone_Salvage.png" width="30" height="30"></button>
+                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item" onclick="drone_change_state()">Change state</a><!--modify that, not really good, maybe click on it an then popover and button to change state (icon)-->
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark disabled" onclick="pain_train()" disabled>Pain Train <img src="Contracts/Pain_Train.png" width="30" height="30"></button>
+                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item disabled" onclick="pain_train_change_state()">Change state</a> <!--To loading to in movement to drop chargement-->
+                  </div>
+                </div>
+              </li>
+              <!--Event Contracts-->
+              <li class="list-group-item">
+                <button type="button" class="btn btn-dark" onclick="central_station()">Central station <img src="Contracts/Central_Station.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="alpha_warden()">Alpha Warden <img src="Contracts/Alpha_Warden.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="cycle_spike()">Cycle Spike <img src="Contracts/Cycle_Spike.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="evacuation()" title="Click on evac icon to clear or unclear evac">Evacuation <img src="Contracts/Evacuation.png" width="30" height="30"></button>
+              </li>
+              <!--Players-->
+              <li class="list-group-item">
+                <button type="button" class="btn btn-dark" onclick="add_player()">Add Ally <img src="Players/player.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="add_enemy()">Add Enemy <img src="Players/enemy.png" width="30" height="30"></button>
+              </li>
+              <!--Spawn Action-->
+              <li class="list-group-item">
+                <div class="btn-group">
+                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">Players spawn </button>
+                  <div class="dropdown-menu bg-dark text-white">
+                    <a class="dropdown-item" onclick="spawn_solo()">Solo</a>
+                    <a class="dropdown-item" onclick="spawn_duo()">Duo</a>
+                    <a class="dropdown-item" onclick="spawn_squad()">Squad</a>
+                  </div>
+                </div>
+              </li>
+              <!--Debug-->
+              <li class="list-group-item" id="debug_li" style="display: none;">
+                <button type="button" class="btn btn-dark" onclick="add_debug()">Add Debug <img src="Players/ruthless.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="save_debug()">Save coordinate </button>
+              </li>
+            </ul>
+        </div>
+    </div>
+
+    <footer style="margin-top: 30px;">
+      <div class="text-white" style="background-color: #343a4070;">
+        <p>Images or assets used comes from <i>The Cycle</i> or from websites created and owned by <a rel="nofollow" class="external text" href="https://www.yager.de/">Yager </a> or <a rel="nofollow" class="external text" href="https://www.yager.de/">Yager Development GmbH </a>, who hold the copyright of <i>The Cycle</i>. All trademarks and registered trademarks present in the image are proprietary to <a rel="nofollow" class="external text" href="https://www.yager.de/">Yager Development GmbH </a>. For more information, see the <a href="/index.php?title=The_Cycle_Wiki_Dev:Copyrights&amp;action=edit&amp;redlink=1" class="new" title="The Cycle Wiki Dev:Copyrights (page does not exist)">copyright notice</a>.<br>
+        The use of images to illustrate articles concerning the subject of the images in question is believed to qualify as <b><a href="https://en.wikipedia.org/wiki/fair_use" class="extiw" title="wikipedia:fair use">fair use</a></b> under <a href="https://en.wikipedia.org/wiki/United_States_copyright_law" class="extiw" title="wikipedia:United States copyright law">United States copyright law</a>, as such display does not significantly impede the right of the copyright holder to sell the copyrighted material.
+        <br>For more information please read The Cycle's official <a rel="nofollow" class="external text" href="https://thecycle.game/EULA/">EULA</a>. For legal inquiries about the content owned by Yager, see "<a rel="nofollow" class="external text" href="https://www.yager.de/legal/">Yager Legal Notice</a>".
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      var last_id = 0;
+
+      //Array that manage state of all contracts
+      var contracts = [{Contract_name: 'Minerals', Is_active: false, status: {White: false, number_white: 0}},
+                       {Contract_name: 'Hunt', Is_active: false},
+                       {Contract_name: 'Brightcaps', Is_active: false},
+                       {Contract_name: 'Zeal', Is_active: false, status: {Red: false, number_zeal: 0}},
+                       {Contract_name: 'Letium', Is_active: false},
+                       {Contract_name: 'Drill', Is_active: false}, 
+                       {Contract_name: 'Uplink', Is_active: false},
+                       {Contract_name: 'Power_Up', Is_active: false, status: {number_power_up: 0}},
+                       {Contract_name: 'Drone', Is_active: false, status: {number_drone: 0}},
+                       {Contract_name: 'Pain_Train', Is_active: false},
+                       {Contract_name: 'Central_Station', Is_active: false},
+                       {Contract_name: 'Alpha_Warden', Is_active: false},
+                       {Contract_name: 'Cycle_spike', Is_active: false},
+                       {Contract_name: 'Evacuation', Is_active: false, clear: false}];
+                       //see if we add uplink + add in each function something that manage number of active contracts (if we try to add more than 4 : alert (forbidden))
+                       // if we do that allow user to unactivate each contracts ()
+
+      var tab_marker = L.layerGroup();
+
+      var marker_spawn_location = [500,350];
+
+      //COORD OF EACH CONTRACTS
+      var white_minerals_coord = {map01: [[0,0]], map02:[[0,0]]};
+      var drill_coord = {map01: [[0,0]], map02:[[0,0]]};
+      var uplink_coord = {map01: [[357,374], [595,529], [350,657]], map02:[[429,338], [683,466], [410,622]]};
+      var power_up_coord = {map01: [{x: 499, y: 197, is_active: false}, {x: 561, y: 254, is_active: false}, {x: 693, y: 285, is_active: false}, {x: 622, y: 344, is_active: false}, {x: 749, y: 479, is_active: false}, {x: 761, y: 708, is_active: false}, {x: 556, y: 717, is_active: false}, {x: 472, y: 777, is_active: false}, {x: 216, y: 765, is_active: false}, {x: 201, y: 516, is_active: false}, {x: 228, y: 301, is_active: false}], 
+                            map02:[{x: 450, y: 222, is_active: false}, {x: 658, y: 270, is_active: false}, {x: 838, y: 463, is_active: false}, {x: 677, y: 488, is_active: false}, {x: 808, y: 621, is_active: false}, {x: 642, y: 814, is_active: false}, {x: 393, y: 775, is_active: false}, {x: 195, y: 743, is_active: false}, {x: 133, y: 314, is_active: false}, {x: 227, y: 337, is_active: false}, {x: 277, y: 269, is_active: false}, {x: 246, y: 535, is_active: false}]};
+      var drone_coord = {map01: [{x: 503, y: 197, is_active: false}, {x: 232, y: 315, is_active: false}, {x: 196, y: 498, is_active: false}, {x: 247, y: 755, is_active: false}, {x: 456, y: 775, is_active: false}, {x: 565, y: 713, is_active: false}, {x: 710, y: 802, is_active: false}, {x: 761, y: 696, is_active: false}, {x: 791, y: 462, is_active: false}, {x: 643, y: 346, is_active: false}, {x: 569, y: 258, is_active: false}], 
+                         map02: [{x: 472, y: 277, is_active: false}, {x: 166, y: 680, is_active: false}, {x: 393, y: 702, is_active: false}, {x: 535, y: 801, is_active: false}, {x: 735, y: 806, is_active: false}, {x: 690, y: 636, is_active: false}, {x: 771, y: 481, is_active: false}, {x: 726, y: 256, is_active: false}, {x: 521, y: 164, is_active: false}, {x: 199, y: 218, is_active: false}]};
+
+
+      var spawn_location = {map01: {solo: [[250,98], [390,102], [543,135], [675,128], [785,172], [830,271], [849,415], [859,576], [864,701], [820,820], [679,894], [550,892], [410,877], [300,896], [172,791], [125,694], [90,560], [78,425], [90,280], [145,165]], 
+                                    duo:[], 
+                                    squad: []},
+                            map02: {solo: [], 
+                                    duo:[], 
+                                    squad: [[200,200], [660,120], [880,450], [600,840], [220,810]]},
+                            active: "none"}
+
+      //Map parameters
+      var map = L.map('Map', {crs: L.CRS.Simple, 
+                              maxZoom: 3, 
+                              maxBounds: [[0,0], [1000,1000]], 
+                              doubleClickZoom: false,
+                              fullscreenControl: true,
+                              fullscreenControlOptions: {
+                                position: 'topleft'
+                              }
+                             });
+      var num_map = 1;
+      var bounds = [[0,0], [1000,1000]];
+      var image = L.imageOverlay('Maps/Bright_Sands_Map01.png', bounds).addTo(map);
+      map.fitBounds(bounds);
+
+      //MAP FUNCTION
+      function change_to_map01(){
+        clear_map(); //voir avec document.location.assign('URL/index.html/#map01');
+        num_map = 1;  
+        image = L.imageOverlay('Maps/Bright_Sands_Map01.png', bounds).addTo(map);
+      }
+      function change_to_map02(){
+        clear_map(); //voir avec document.location.assign('URL/index.html/#map02');
+        num_map = 2;
+        image = L.imageOverlay('Maps/Crescent_Falls_Map02.png', bounds).addTo(map);
+      }
+
+      function clear_map(){
+        tab_marker.clearLayers();
+        contracts.forEach(contract =>{
+          contract.Is_active = false;
+        });
+
+        contracts.find(e => e.Contract_name === 'Minerals').status.number_white = 0;
+        contracts.find(e => e.Contract_name === 'Zeal').status.number_zeal = 0;
+        contracts.find(e => e.Contract_name === 'Zeal').status.Red = false;
+        contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up = 0;
+        contracts.find(e => e.Contract_name === 'Power_Up').status.number_drone = 0;
+
+        power_up_coord.map01.forEach(e => {
+          e.is_active = false;
+        });
+        power_up_coord.map02.forEach(e => {
+          e.is_active = false;
+        });
+
+        spawn_location.active = "none";
+      }
+
+      function random_map(game_mode){
+        clear_map();
+
+        //Choose map01 or map02
+        let map = Math.round(Math.random()*2-1)+2;
+        if(map == 1){
+          change_to_map01();
+        }
+        else if (map == 2){
+          change_to_map02();
+        }
+
+        //This variable came from Contract_Combinations.csv whithout column name
+        let file = '2020-07-23,SQUAD,Drill_Brightcaps_Power_Mineral,Drill,Brightcaps,Power,Mineral\n2020-07-23,SQUAD,Drill_Mineral_Zeal_Power,Drill,Mineral,Zeal,Power\n2020-07-23,SQUAD,Drill_Mineral_Power_Salvage,Drill,Mineral,Power,Salvage\n2020-07-23,SQUAD,Uplink_Brightcaps_Minerals_Power,Uplink,Brightcaps,Minerals,Power\n2020-07-23,SQUAD,Uplink_Mineral_Zeal_Salvage,Uplink,Mineral,Zeal,Salvage\n2020-07-23,SQUAD,Uplink_Mineral_Zeal_Power,Uplink,Mineral,Zeal,Power\n2020-07-23,SQUAD,Uplink_Mineral_Power_Hunt,Uplink,Mineral,Power,Hunt\n2020-07-23,SQUAD,Uplink_Mineral_Salvage_Hunt,Uplink,Mineral,Salvage,Hunt\n2020-07-23,SQUAD,Train_Mineral_Hunt_Letium,Train,Mineral,Hunt,Letium\n2020-07-23,SQUAD,Train_Mineral_Salvage_Hunt,Train,Mineral,Salvage,Hunt\n2020-07-23,SQUAD,Train_Mineral_Power_Hunt,Train,Mineral,Power,Hunt\n2020-07-23,SQUAD,Train_Mineral_Zeal_Power,Train,Mineral,Zeal,Power\n2020-07-23,SQUAD,Train_Mineral_Zeal_Salvage,Train,Mineral,Zeal,Salvage\n2020-07-23,SQUAD,Train_Brightcaps_Mineral_Hunt,Train,Brightcaps,Mineral,Hunt\n2020-07-23,SQUAD,Train_Brightcaps_Minerals_Power,Train,Brightcaps,Minerals,Power\n2020-07-23,SQUAD,Train_Mineral_Power_Letium,Train,Mineral,Power,Letium\n2020-07-23,DUO,Drill_Mineral_Power_Hunt,Drill,Mineral,Power,Hunt\n2020-07-23,DUO,Drill_Brightcaps_Power_Mineral,Drill,Brightcaps,Power,Mineral\n2020-07-23,DUO,Drill_Mineral_Zeal_Power,Drill,Mineral,Zeal,Power\n2020-07-23,DUO,Uplink_Mineral_Zeal_Power,Uplink,Mineral,Zeal,Power\n2020-07-23,DUO,Uplink_Mineral_Power_Salvage,Uplink,Mineral,Power,Salvage\n2020-07-23,DUO,Uplink_Mineral_Power_Hunt,Uplink,Mineral,Power,Hunt\n2020-07-23,DUO,Uplink_Minerals_Power_Letium,Uplink,Minerals,Power,Letium\n2020-07-23,DUO,Train_Mineral_Salvage_Hunt,Train,Mineral,Salvage,Hunt\n2020-07-23,DUO,Train_Mineral_Power_Hunt,Train,Mineral,Power,Hunt\n2020-07-23,DUO,Train_Mineral_Zeal_Power,Train,Mineral,Zeal,Power\n2020-07-23,DUO,Train_Mineral_Zeal_Salvage,Train,Mineral,Zeal,Salvage\n2020-07-23,DUO,Train_Brightcaps_Minerals_Power,Train,Brightcaps,Minerals,Power\n2020-07-23,SOLO,Uplink_Brightcaps_Minerals_Power,Uplink,Brightcaps,Minerals,Power\n2020-07-23,SOLO,Uplink_Mineral_Zeal_Salvage,Uplink,Mineral,Zeal,Salvage\n2020-07-23,SOLO,Uplink_Mineral_Zeal_Power,Uplink,Mineral,Zeal,Power\n2020-07-23,SOLO,Uplink_Mineral_Power_Hunt,Uplink,Mineral,Power,Hunt\n2020-07-23,SOLO,Uplink_Minerals_Power_Letium,Uplink,Minerals,Power,Letium\n2020-07-23,SOLO,Train_Mineral_Power_Hunt,Train,Mineral,Power,Hunt\n2020-07-23,SOLO,Train_Minerals_Zeal_Letium,Train,Minerals,Zeal,Letium\n2020-07-23,SOLO,Train_Mineral_Zeal_Salvage,Train,Mineral,Zeal,Salvage';
+
+        let contract_combinations = [];
+        file.split(/\n/).forEach(e => {
+          current = e.split(',');
+          contract_combinations.push({Game_Mode: current[1], activity_set_id: current[2], contract1: current[3], contract2: current[4], contract3: current[5], contract4: current[6]});
+        });
+
+        let min = contract_combinations.findIndex(e => e.Game_Mode === game_mode);
+        let max = min + contract_combinations.filter(e => e.Game_Mode === game_mode).length -1;
+        let contract_choosen = Math.round(Math.random() * (max - min)) + min;
+
+        //HERE CONTRACTS
+
+        //Hunt
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Hunt') == true){ //@TODO fix this to be better : to many hunt are displayed on the map
+          var nb_hunt = [0, 0, 0, 0];
+          for (let i = 0; i < 4; i++) {
+            nb_hunt[i] = (Math.round(Math.random() * 4 - 1) +1); //Between 0 and 4 starts of each hunt            
+          }
+
+          //1 stars
+          for(let i = 0; i < nb_hunt[0]; i++){
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            hunt_add_1(x,y);
+          }
+          //2 stars
+          for(let i = 0; i < nb_hunt[1]; i++){
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            hunt_add_2(x,y);
+          }
+          //3 stars
+          for(let i = 0; i < nb_hunt[2]; i++){
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            hunt_add_3(x,y);
+          }
+          //4 stars
+          for(let i = 0; i < nb_hunt[3]; i++){
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            hunt_add_4(x,y);
+          }
+        }
+
+        //Brightcaps
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Brightcaps') == true){
+          //Spawn 6-12 Brightcaps
+          num_minerals = Math.round(Math.random() * (12 - 6)) + 100;
+          for (let i = 0; i < num_minerals; i++) {
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            brightcaps(x, y);            
+          }
+        }
+
+        //Zeal
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Zeal') == true){
+          for (let i = 0; i < 3; i++) {
+            x = Math.round(Math.random() * (700 - 300)) + 300;
+            y = Math.round(Math.random() * (700 - 300)) + 300;
+            zeal(x, y);              
+          }
+        }
+
+        //Letium
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Letium') == true){
+          num_minerals = 40;
+          for (let i = 0; i < num_minerals; i++) {
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            letium(x, y);            
+          }
+        }
+
+        //Drill
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Drill') == true){
+          x = Math.round(Math.random() * (900 - 100)) + 100;
+          y = Math.round(Math.random() * (900 - 100)) + 100; 
+          drill(x,y);
+        }
+
+        //Uplink
+        if(contract_combinations[contract_choosen].activity_set_id.includes('Uplink') == true){
+          uplink();
+          nb_rotation = Math.round(Math.random() * 2);
+          console.log('uplink rotation : ', nb_rotation)
+          for (let i = 0; i < nb_rotation; i++) {
+          }
+          //Change rotation ? 50% chance
+          if(Math.round(Math.random() * 100) <= 50){
+            uplink_change_rotation();
+          }
+        }
+
+        
+
+        //Idea : choose number of contracts by phase game : early 0 (white, 3 zeal), mid 1 (cycle spike / central station / Alpha Warden / Red Zeal), end 2 (evac)
+        game_phase = Math.round(Math.random() * 2);
+        if(game_phase == 0){
+          //EARLY GAME
+
+          //Spawn minerals
+          num_minerals = 25;
+          for (let i = 0; i < num_minerals; i++) {
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            minerals(x, y);            
+          }
+
+          //Spawn white minerals
+          //Maybe have spawn location in array
+          minerals_white();
+          minerals_white();
+
+          //Power up
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Power') == true){
+            nb_power_up = 3;
+            if(num_map == 1){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map01.length-1));
+                  if(power_up_coord.map01[n].is_active == false){
+                    power_up_coord.map01[n].is_active = true;
+                    power_up(power_up_coord.map01[n].x, power_up_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map02.length-1));
+                  if(power_up_coord.map02[n].is_active == false){
+                    power_up_coord.map02[n].is_active = true;
+                    power_up(power_up_coord.map02[n].x, power_up_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //Drone
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Salvage') == true){
+            nb_drone = 4;
+
+            if(num_map == 1){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map01.length-1));
+                  if(drone_coord.map01[n].is_active == false){
+                    drone_coord.map01[n].is_active = true;
+                    drone(drone_coord.map01[n].x, drone_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map02.length-1));
+                  if(drone_coord.map02[n].is_active == false){
+                    drone_coord.map02[n].is_active = true;
+                    drone(drone_coord.map02[n].x, drone_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //@PAINTRAIN
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Train') == true){
+            //loading or in transit
+          }
+
+          //...
+        }
+        else if(game_phase == 1){
+          //MID GAME
+
+          //Spawn minerals
+          num_minerals = 25;
+          for (let i = 0; i < num_minerals; i++) {
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            minerals(x, y);           
+          }
+
+          //Power up
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Power') == true){
+            nb_power_up = Math.round(Math.random() * (7 - 4)) + 4; //between 4-7 power station
+            
+            if(num_map == 1){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map01.length-1));
+                  if(power_up_coord.map01[n].is_active == false){
+                    power_up_coord.map01[n].is_active = true;
+                    power_up(power_up_coord.map01[n].x, power_up_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map02.length-1));
+                  if(power_up_coord.map02[n].is_active == false){
+                    power_up_coord.map02[n].is_active = true;
+                    power_up(power_up_coord.map02[n].x, power_up_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //Drones
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Salvage') == true){
+            nb_drone = Math.round(Math.random() * (3)); //between 0 and 3 drones
+
+            if(num_map == 1){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map01.length-1));
+                  if(drone_coord.map01[n].is_active == false){
+                    drone_coord.map01[n].is_active = true;
+                    drone(drone_coord.map01[n].x, drone_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map02.length-1));
+                  if(drone_coord.map02[n].is_active == false){
+                    drone_coord.map02[n].is_active = true;
+                    drone(drone_coord.map02[n].x, drone_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //@PAINTRAIN
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Train') == true){
+            //unloading or in transit
+          }
+
+          //If power station > 5 add chance to spawn central station (40%)
+          if(contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up >= 5){
+            if(Math.round(Math.random() * 100) <= 40){
+              central_station();
+            }
+          }
+
+          //Alpha Warden 60% of spawn chance
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Hunt') == true){
+            if(Math.round(Math.random() * 100) <= 60){
+              x = Math.round(Math.random() * (700 - 300)) + 300;
+              y = Math.round(Math.random() * (700 - 300)) + 300; 
+              alpha_warden(x,y);
+            }
+          }
+
+          // Probability of having a Cycle Spike :
+          // Base probability of 75%
+          // -25% if either Hunt or Powerup is in the match
+          // -50% if both are active
+          let have_cycle_spike;
+          if((contract_combinations[contract_choosen].activity_set_id.includes('Power') == true) && (contract_combinations[contract_choosen].activity_set_id.includes('Hunt') == true)){
+            have_cycle_spike = (Math.round(Math.random() * 100) <= 25);
+          }
+          else if((contract_combinations[contract_choosen].activity_set_id.includes('Power') == true) || (contract_combinations[contract_choosen].activity_set_id.includes('Hunt') == true)){
+            have_cycle_spike = (Math.round(Math.random() * 100) <= 50);
+          }
+          else{
+            have_cycle_spike = (Math.round(Math.random() * 100) <= 75);
+          }
+          if(have_cycle_spike == true){
+            x = Math.round(Math.random() * (700 - 300)) + 300;
+            y = Math.round(Math.random() * (700 - 300)) + 300; 
+            cycle_spike(x,y);
+          }
+        }
+        else if(game_phase == 2){
+          //END GAME
+
+          //Spawn minerals
+          num_minerals = 10;
+          for (let i = 0; i < num_minerals; i++) {
+            x = Math.round(Math.random() * (900 - 100)) + 100;
+            y = Math.round(Math.random() * (900 - 100)) + 100;
+            minerals(x, y);
+          }
+
+          //Power up
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Power') == true){  
+            nb_power_up = 7;
+
+            if(num_map == 1){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map01.length-1));
+                  if(power_up_coord.map01[n].is_active == false){
+                    power_up_coord.map01[n].is_active = true;
+                    power_up(power_up_coord.map01[n].x, power_up_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_power_up; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (power_up_coord.map02.length-1));
+                  if(power_up_coord.map02[n].is_active == false){
+                    power_up_coord.map02[n].is_active = true;
+                    power_up(power_up_coord.map02[n].x, power_up_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //Drone
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Salvage') == true){
+            nb_drone = Math.round(Math.random()*2);//between 0 and 2 drones
+
+            if(num_map == 1){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map01.length-1));
+                  if(drone_coord.map01[n].is_active == false){
+                    drone_coord.map01[n].is_active = true;
+                    drone(drone_coord.map01[n].x, drone_coord.map01[n].y);
+                    break;
+                  }
+                }            
+              }
+            }
+            else if(num_map == 2){
+              for (let i = 0; i < nb_drone; i++) {
+                let n;
+                while(true) {
+                  n = Math.round(Math.random() * (drone_coord.map02.length-1));
+                  if(drone_coord.map02[n].is_active == false){
+                    drone_coord.map02[n].is_active = true;
+                    drone(drone_coord.map02[n].x, drone_coord.map02[n].y);
+                    break;
+                  }
+                }
+              }
+            }
+          }
+
+          //No pain train
+
+          //Central station (20%)
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Power') == true){
+            if(Math.round(Math.random() * 100) <= 20){
+              central_station();
+            }
+          }
+
+          //Alpha Warden 20% of spawn chance
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Hunt') == true){
+            if(Math.round(Math.random() * 100) <= 20){
+              x = Math.round(Math.random() * (700 - 300)) + 300;
+              y = Math.round(Math.random() * (700 - 300)) + 300; 
+              alpha_warden(x,y);
+            }
+          }
+
+          //Spawn evac
+          evacuation();
+        }        
+      }
+
+      function download_map(){
+        
+      }
+
+      //CONTRACTS FUNCTION
+      function minerals(x, y){
+        let minerals_icon = L.icon({
+          iconUrl: 'Contracts/Veltecite.png',
+          iconSize: [60,60]
+        })
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+        marker = L.marker(spawn, {icon: minerals_icon, draggable: true}).addTo(map);
+        tab_marker.addLayer(marker);
+        marker.on('dblclick', function(e){delete_icon(marker);});
+      }
+      function minerals_white(x,y){
+
+        if((contracts.find(e => e.Contract_name === 'Minerals').status.number_white >= 2) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 2 White Minerals on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let white_minerals_icon = L.icon({
+            iconUrl: 'Contracts/White_Veltecite.png',
+            iconSize: [60,60]
+          });
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: white_minerals_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Minerals').status.number_white += 1;
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Minerals').status.number_white -= 1;});
+        }
+      }
+
+      function hunt_add_1(x,y){
+        let hunt_icon = L.icon({
+          iconUrl: 'Contracts/Hunt.png',
+          iconSize: [60,60]
+        });
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        var circle = L.circle(spawn, {
+            color: '#FF4500',
+            fillColor: '#FF4500', 
+            fillOpacity: 0.3,
+            radius: 35
+          });      
+        
+
+        var marker = L.marker(spawn, {icon: hunt_icon, draggable: true}).addTo(map);
+        circle.addTo(map);
+        contracts.find(e => e.Contract_name === 'Hunt').Is_active = true;
+        tab_marker.addLayer(marker);
+        tab_marker.addLayer(circle);
+        marker.on('dragend', function(e){move_circle(marker, circle)});
+        marker.on('dblclick', function(e){delete_icon(marker), delete_icon(circle)});
+      }
+      function hunt_add_2(x,y){
+        let hunt_icon = L.icon({
+          iconUrl: 'Contracts/Hunt.png',
+          iconSize: [60,60]
+        });
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        var circle = L.circle(spawn, {
+            color: '#FF4500',
+            fillColor: '#FF4500', 
+            fillOpacity: 0.3,
+            radius: 40
+          });
+
+        var marker = L.marker(spawn, {icon: hunt_icon, draggable: true}).addTo(map);
+        circle.addTo(map);
+        contracts.find(e => e.Contract_name === 'Hunt').Is_active = true;
+        tab_marker.addLayer(marker);
+        tab_marker.addLayer(circle);
+        marker.on('dragend', function(e){move_circle(marker, circle)});
+        marker.on('dblclick', function(e){delete_icon(marker), delete_icon(circle)});
+      }
+      function hunt_add_3(x,y){
+        let hunt_icon = L.icon({
+          iconUrl: 'Contracts/Hunt.png',
+          iconSize: [60,60]
+        });
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        var circle = L.circle(spawn, {
+            color: '#FF4500',
+            fillColor: '#FF4500', 
+            fillOpacity: 0.3,
+            radius: 50
+          });
+        
+        var marker = L.marker(spawn, {icon: hunt_icon, draggable: true}).addTo(map);
+        circle.addTo(map);
+        contracts.find(e => e.Contract_name === 'Hunt').Is_active = true;
+        tab_marker.addLayer(marker);
+        tab_marker.addLayer(circle);
+        marker.on('dragend', function(e){move_circle(marker, circle)});
+        marker.on('dblclick', function(e){delete_icon(marker), delete_icon(circle)});
+      }
+      function hunt_add_4(x,y){
+        let hunt_icon = L.icon({
+          iconUrl: 'Contracts/Hunt.png',
+          iconSize: [60,60]
+        });
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        var circle = L.circle(spawn, {
+            color: '#FF4500',
+            fillColor: '#FF4500', 
+            fillOpacity: 0.3,
+            radius: 60
+          });
+
+        var marker = L.marker(spawn, {icon: hunt_icon, draggable: true}).addTo(map);
+        circle.addTo(map);
+        contracts.find(e => e.Contract_name === 'Hunt').Is_active = true;
+        tab_marker.addLayer(marker);
+        tab_marker.addLayer(circle);
+        marker.on('dragend', function(e){move_circle(marker, circle)});
+        marker.on('dblclick', function(e){delete_icon(marker), delete_icon(circle)});
+      }
+
+      function brightcaps(x,y){
+        let brightcaps_icon = L.icon({
+          iconUrl: 'Contracts/Brightcaps.png',
+          iconSize: [60,60]
+        });
+
+        //ADD BLUE TURQUOISE CIRCLE optionnal
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        marker = L.marker(spawn, {icon: brightcaps_icon, draggable: true}).addTo(map);
+        tab_marker.addLayer(marker);
+        marker.on('dblclick', function(e){delete_icon(marker)});
+      }
+
+      function zeal(x,y){
+        if((contracts.find(e => e.Contract_name === 'Zeal').status.number_zeal >= 3) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 3 Zeal on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let zeal_icon = L.icon({
+            iconUrl: 'Contracts/Zeal.png',
+            iconSize: [60,60]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: zeal_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Zeal').status.number_zeal += 1;
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Zeal').status.number_zeal -= 1;});
+        }
+      }
+      function zeal_red(x,y){
+        if((contracts.find(e => e.Contract_name === 'Zeal').status.Red == true) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 1 Red Zeal on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let red_zeal_icon = L.icon({
+            iconUrl: 'Contracts/Red_Zeal.png',
+            iconSize: [60,60]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: red_zeal_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Zeal').status.Red = true;
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Zeal').status.Red = false;});
+        }
+      }
+
+      function letium(x,y){
+        let letium_icon = L.icon({
+          iconUrl: 'Contracts/Letium_Gas.png',
+          iconSize: [60,60]
+        });
+
+        if(x != null && y != null){
+          var spawn = [x,y];
+        }
+        else{
+          var spawn = marker_spawn_location;
+        }
+
+        marker = L.marker(spawn, {icon: letium_icon, draggable: true}).addTo(map);
+        tab_marker.addLayer(marker);
+      }
+
+      function drill(x,y){
+        if((contracts.find(e => e.Contract_name === 'Drill').Is_active == true) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 1 Drill on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let drill_icon = L.icon({
+            iconUrl: 'Contracts/Drill.png',
+            iconSize: [80, 80]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+          
+          marker = L.marker(spawn, {icon: drill_icon, draggable: true}).addTo(map);
+          contracts.find(e => e.Contract_name === 'Drill').Is_active = true;
+          tab_marker.addLayer(marker);
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Drill').Is_active = false;});
+        }          
+      }
+
+      function uplink(){
+        if(contracts.find(e => e.Contract_name === 'Uplink').Is_active == true){
+          alert("Where do you want to put others Uplink ?\nDouble click on a contracts to delete it");
+          return;
+        }         
+
+        let uplink_icon = L.icon({
+          iconUrl: 'Contracts/Uplink.png',
+          iconSize: [80, 80]
+        });
+
+        let uplink_icon_inactive = L.icon({
+          iconUrl: 'Contracts/Uplink.png',
+          iconSize: [80, 80]
+        });
+
+        let uplink_icon_next = L.icon({
+          iconUrl: 'Contracts/Uncolored_contracts/Uplink_Next.png',
+          iconSize: [80, 80]
+        });
+          
+        if(num_map==1){
+          marker = L.marker(uplink_coord.map01[0], {icon: uplink_icon}).addTo(map);
+          marker_next = L.marker(uplink_coord.map01[1], {icon: uplink_icon_next, opacity: 0.7}).addTo(map);
+          marker_inactive = L.marker(uplink_coord.map01[2], {icon: uplink_icon_inactive, opacity: 0.7}).addTo(map);
+        }
+        else{
+          marker = L.marker(uplink_coord.map02[0], {icon: uplink_icon}).addTo(map);
+          marker_next = L.marker(uplink_coord.map02[1], {icon: uplink_icon_next, opacity: 0.7}).addTo(map);
+          marker_inactive = L.marker(uplink_coord.map02[2], {icon: uplink_icon_inactive, opacity: 0.7}).addTo(map);
+        }
+        
+        contracts.find(e => e.Contract_name === 'Uplink').Is_active = true;
+        tab_marker.addLayer(marker);
+        tab_marker.addLayer(marker_inactive);
+        tab_marker.addLayer(marker_next);
+        
+        marker.on('click', function(e){uplink_rotate(marker, marker_inactive, marker_next);});
+
+        marker_inactive.on('click', function(e){uplink_change_rotation(marker_inactive, marker_next);});
+        marker_next.on('click', function(e){uplink_change_rotation(marker_inactive, marker_next);});
+
+        marker.on('dblclick', function(e){delete_uplink(marker, marker_inactive, marker_next);});
+        marker_inactive.on('dblclick', function(e){delete_uplink(marker, marker_inactive, marker_next);});
+        marker_next.on('dblclick', function(e){delete_uplink(marker, marker_inactive, marker_next);});
+      }
+      function uplink_change_rotation(Uplink_inactive, Uplink_next){
+        if(contracts.find(e => e.Contract_name === 'Uplink').Is_active == false)
+          return;
+        
+        let tmp_coord = Uplink_next.getLatLng();
+        Uplink_next.setLatLng(Uplink_inactive.getLatLng());
+        Uplink_inactive.setLatLng(tmp_coord);
+      }
+      function uplink_rotate(Uplink_active, Uplink_inactive, Uplink_next){
+        if(contracts.find(e => e.Contract_name === 'Uplink').Is_active == false)
+          return;
+
+        let tmp_coord = Uplink_active.getLatLng();
+        Uplink_active.setLatLng(Uplink_next.getLatLng());
+        Uplink_next.setLatLng(Uplink_inactive.getLatLng());
+        Uplink_inactive.setLatLng(tmp_coord);
+      }
+      //Function to delete all markers on all markers
+      function delete_uplink(marker, marker_inactive, marker_next){
+        delete_icon(marker);
+        delete_icon(marker_inactive);
+        delete_icon(marker_next);
+        contracts.find(e => e.Contract_name === 'Uplink').Is_active = false;
+      }
+
+
+      function power_up(x,y){
+        if((contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up >= 7) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 7 Power Up on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let power_up_icon = L.icon({
+          iconUrl: 'Contracts/Power_Up.png',
+          iconSize: [60,60]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: power_up_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up += 1;
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Power_Up').status.number_drone -= 1;});
+        }        
+      }
+
+      function drone(x,y){
+        if((contracts.find(e => e.Contract_name === 'Drone').status.number_drone >= 7) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 7 Drones on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let drone_salvage_icon = L.icon({
+          iconUrl: 'Contracts/Drone_Salvage.png',
+          iconSize: [60,60]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: drone_salvage_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Drone').status.number_drone += 1;
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Drone').status.number_drone -= 1;});
+        }
+      }
+
+      function pain_train(){
+        alert('Stop hacking this website !');
+      }
+
+      function central_station(){
+        if(contracts.find(e => e.Contract_name === 'Central_Station').Is_active == true){
+          alert("You can't add more than 1 Central Station on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let central_station_icon = L.icon({
+            iconUrl: 'Contracts/Central_Station.png',
+            iconSize: [80, 80]
+          });
+          
+          if(num_map==1){
+            marker = L.marker([465,465], {icon: central_station_icon}).addTo(map);
+          }
+          else{
+            marker = L.marker([515,515], {icon: central_station_icon}).addTo(map);
+          }
+          contracts.find(e => e.Contract_name === 'Central_Station').Is_active = true;
+          tab_marker.addLayer(marker);
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Central_Station').Is_active = false;});
+        }          
+      }
+
+      function alpha_warden(x,y){
+        if((contracts.find(e => e.Contract_name === 'Alpha_Warden').Is_active == true) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 1 Alpha Warden on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let alpha_warden_icon = L.icon({
+            iconUrl: 'Contracts/Alpha_Warden.png',
+            iconSize: [80, 80]
+          });
+
+          if((x != null) && (y != null)){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: alpha_warden_icon, draggable: true}).addTo(map);
+          contracts.find(e => e.Contract_name === 'Alpha_Warden').Is_active = true;
+          tab_marker.addLayer(marker);
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Alpha_Warden').Is_active = false;});
+        }
+      }
+
+      function cycle_spike(x,y){
+        if((contracts.find(e => e.Contract_name === 'Cycle_spike').Is_active == true) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 1 Alpha Warden on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let cycle_spike_icon = L.icon({
+              iconUrl: 'Contracts/Cycle_spike.png',
+              iconSize: [80, 80]
+            });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          var circle = L.circle(spawn, { //when moving cycle spike move circle too
+            color: '#8B0000', //Ajust the color to a bordeaux red
+            fillColor: '#f03', 
+            fillOpacity: 0.3,
+            radius: 85
+          });
+
+          var marker = L.marker(spawn, {icon: cycle_spike_icon, draggable: true}).addTo(map);
+          circle.addTo(map);
+          contracts.find(e => e.Contract_name === 'Cycle_spike').Is_active = true;
+          tab_marker.addLayer(marker);
+          tab_marker.addLayer(circle);
+          marker.on('dragend', function(e){move_circle(marker, circle)});
+          marker.on('dblclick', function(e){delete_icon(marker); delete_icon(circle); contracts.find(e => e.Contract_name === 'Cycle_spike').Is_active = false;});         
+        }
+      }
+
+      function evacuation(){
+        if((contracts.find(e => e.Contract_name === 'Evacuation').Is_active == true)){
+          alert("How can you evac at multiple location ?! Are you in the future ?\nDouble click on a contracts to delete it");
+        }
+        else{
+          let evac_icon = L.icon({
+            iconUrl: 'Contracts/Evacuation.png',
+            iconSize: [80, 80]
+          });
+          
+          if(num_map==1){
+            marker = L.marker([462,485], {icon: evac_icon}).addTo(map);
+          }
+          else{
+            marker = L.marker([484,484], {icon: evac_icon}).addTo(map);
+          }
+          contracts.find(e => e.Contract_name === 'Evacuation').Is_active = true;
+          tab_marker.addLayer(marker);
+
+          marker.on('click', function(e){change_evac_color(marker)});
+
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Evacuation').Is_active = false;});
+        }
+      }
+      function change_evac_color(marker){
+        let evac_icon = L.icon({
+            iconUrl: 'Contracts/Evacuation.png',
+            iconSize: [80, 80]
+        });
+        let evac_icon_clear = L.icon({
+            iconUrl: 'Contracts/EvacuationGreen.png',
+            iconSize: [80, 80]
+        });
+
+        if(contracts.find(e => e.Contract_name === 'Evacuation').clear == false){
+          marker.setIcon(evac_icon_clear);
+          contracts.find(e => e.Contract_name === 'Evacuation').clear = true;
+        }
+        else{
+          marker.setIcon(evac_icon);
+          contracts.find(e => e.Contract_name === 'Evacuation').clear = false;
+        }        
+      }
+
+      //PLAYERS
+      function add_player(){
+        let player_icon = L.icon({
+          iconUrl: 'Players/player.png', //Replace with a better icon (pas de direction dedans)
+          iconSize: [30,30]
+        })
+
+        marker = L.marker(marker_spawn_location, {icon: player_icon, draggable: true}).addTo(map);
+        tab_marker.addLayer(marker);
+      }
+      function add_enemy(){
+        let player_icon = L.icon({
+          iconUrl: 'Players/enemy.png', //Replace with a better icon
+          iconSize: [30,30]
+        })
+
+        marker = L.marker(marker_spawn_location, {icon: player_icon, draggable: true}).addTo(map);
+        tab_marker.addLayer(marker);
+      }
+
+      //SPAWN
+      function spawn_solo(){
+        if(!spawn_location.active === "none"){
+          return;
+        }
+
+        if(num_map == 1){
+          spawn_location.map01.solo.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 10
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        else{
+          spawn_location.map02.solo.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 10
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        spawn_location.active = "solo";
+      }
+      function spawn_duo(){
+        if(!spawn_location.active === "none"){
+          return;
+        }
+
+        if(num_map == 1){
+          spawn_location.map01.duo.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 10
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        else{
+          spawn_location.map02.duo.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 10
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        spawn_location.active = "duo";
+      }
+      function spawn_squad(){
+        if(!spawn_location.active === "none"){
+          return;
+        }
+
+        if(num_map == 1){
+          spawn_location.map01.squad.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 15
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        else{
+          spawn_location.map02.squad.forEach(e => {
+            var circle = L.circle(e, {
+              color: '#00BFFF',
+              fillColor: '#00BFFF', 
+              fillOpacity: 0.1,
+              radius: 15
+            });
+
+            circle.addTo(map);
+            tab_marker.addLayer(circle);
+          });
+        }
+        spawn_location.active = "squad";
+      }
+
+      //EVENTS FUNCTION
+      function delete_icon(marker){ //@TODO improve that : when multiple identic markers, it delete only the last, maybe use findIndex on ~e.Marker.marker_id_leaflet~ -> still the same thing with it
+        tab_marker.removeFrom(map);
+        tab_marker.removeLayer(marker);
+        tab_marker.addTo(map)
+      }
+
+      function move_circle(icon, circle){
+        circle.setLatLng(icon._latlng);
+        circle.redraw();
+      }
+      
+      //DEBUG
+      function debug(){
+        var e = document.getElementById("debug_li");
+        if(e.style.display === "none"){
+          e.style.display = "inline-block";
+        } 
+        else{
+          e.style.display = "none";
+        }
+      }
+      function add_debug(){
+        let debug_icon = L.icon({
+          iconUrl: 'Players/ruthless.png',
+          iconSize: [50,50],
+          riseOffset: 800
+        });
+
+        marker = L.marker(marker_spawn_location, {icon: debug_icon, draggable: true}).addTo(map);
+        tab_marker.push({Marker: marker, Marker_name: 'Debug'});
+      }
+      function save_debug(){
+        marker = tab_marker.find(e => e.Marker_name === "Debug").Marker;
+        console.log('Map: ', num_map, ' Coordinate: ', [Math.round(marker._latlng.lat), Math.round(marker._latlng.lng)]);
+      }
+    </script>
+
+    <!--For leaflet-->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+</html>
