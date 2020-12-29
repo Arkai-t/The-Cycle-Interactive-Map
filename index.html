@@ -1,6 +1,13 @@
 <head>
   <meta charset="utf-8">
   <title>Custom maps The Cycle</title>
+  <script>
+    window.nodeRequire = require;
+    delete window.require;
+    delete window.exports;
+    delete window.module;
+  </script>
+  <script type="text/javascript" src="jquery.js"></script>
   <link rel="stylesheet" href="leaflet/leaflet.css" />
   <script src="leaflet/leaflet.js"></script>
   <link rel="stylesheet" href="leaflet.fullscreen-1.6.0/Control.FullScreen.css" />
@@ -14,7 +21,7 @@
     .list-group-mine .list-group-item{
       background-color: #6c757d00;
     }
-	</style>
+  </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -52,13 +59,6 @@
           </div>
       </nav>
       <br>
-      <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        When you want to reset the map or change map, it's better to reload the page and then change the map <br>
-        <p class="font-italic">Totally not my fault</p>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
       <div class="row">
           <div class="col-md-7">
             <br>
@@ -262,6 +262,10 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
 
       function clear_map(){
         tab_marker.clearLayers();
+        map.eachLayer((layer) => {
+          layer.remove();
+        });
+
         contracts.forEach(contract =>{
           contract.Is_active = false;
         });
@@ -271,6 +275,7 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         contracts.find(e => e.Contract_name === 'Zeal').status.Red = false;
         contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up = 0;
         contracts.find(e => e.Contract_name === 'Power_Up').status.number_drone = 0;
+        contracts.find(e => e.Contract_name === 'Evacuation').clear = false;
 
         power_up_coord.map01.forEach(e => {
           e.is_active = false;
@@ -280,6 +285,13 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         });
 
         spawn_location.active = "none";
+
+        if(num_map == 1){
+          image = L.imageOverlay('Maps/Bright_Sands_Map01.png', bounds).addTo(map);
+        }
+        else if(num_map == 2){
+          image = L.imageOverlay('Maps/Crescent_Falls_Map02.png', bounds).addTo(map);
+        }
       }
 
       function random_map(game_mode){
@@ -382,14 +394,6 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         //Uplink
         if(contract_combinations[contract_choosen].activity_set_id.includes('Uplink') == true){
           uplink();
-          nb_rotation = Math.round(Math.random() * 2);
-          console.log('uplink rotation : ', nb_rotation)
-          for (let i = 0; i < nb_rotation; i++) {
-          }
-          //Change rotation ? 50% chance
-          if(Math.round(Math.random() * 100) <= 50){
-            uplink_change_rotation();
-          }
         }
 
         
@@ -1001,7 +1005,7 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         
         marker.on('click', function(e){uplink_rotate(marker, marker_inactive, marker_next);});
 
-        marker_inactive.on('click', function(e){uplink_change_rotation(marker_inactive, marker_next);});
+        marker_inactive.on('click', function(e){uplink_change_rotation(marker_inactive, marker_next);}); //@TODO Fix interaction on random map between Uplink and Power Station/Drones
         marker_next.on('click', function(e){uplink_change_rotation(marker_inactive, marker_next);});
 
         marker.on('dblclick', function(e){delete_uplink(marker, marker_inactive, marker_next);});
@@ -1078,8 +1082,12 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
           marker = L.marker(spawn, {icon: drone_salvage_icon, draggable: true}).addTo(map);
           tab_marker.addLayer(marker);
           contracts.find(e => e.Contract_name === 'Drone').status.number_drone += 1;
+          marker.on('click', function(e){change_drone_state(marker)});
           marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Drone').status.number_drone -= 1;});
         }
+      }
+      function change_drone_state(marker){
+
       }
 
       function pain_train(){
@@ -1333,9 +1341,21 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
 
       //EVENTS FUNCTION
       function delete_icon(marker){ //@TODO improve that : when multiple identic markers, it delete only the last, maybe use findIndex on ~e.Marker.marker_id_leaflet~ -> still the same thing with it
-        tab_marker.removeFrom(map);
         tab_marker.removeLayer(marker);
-        tab_marker.addTo(map)
+
+        map.eachLayer((layer) => {
+          layer.remove();
+        });
+        tab_marker.eachLayer((layer) => {
+          layer.addTo(map);
+        });
+
+        if(num_map == 1){
+          image = L.imageOverlay('Maps/Bright_Sands_Map01.png', bounds).addTo(map);
+        }
+        else if(num_map == 2){
+          image = L.imageOverlay('Maps/Crescent_Falls_Map02.png', bounds).addTo(map);
+        }
       }
 
       function move_circle(icon, circle){
