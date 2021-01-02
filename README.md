@@ -3,7 +3,7 @@ Create custom contracts map for The Cycle
 
 -----  
 
-You can see the app runing [here](https://thecyclemapcreator.go.yj.fr/index.html)  
+You can see the app runing [here](https://thecyclemapcreator.go.yj.fr/index.html).  
 
 ## How it works ? ##  
 
