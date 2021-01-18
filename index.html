@@ -22,6 +22,7 @@
       background-color: #6c757d00;
     }
   </style>
+  <base href="./"> <!--Resolve image loading problem-->
 </head>
 <body>
     <div class="container-fluid">
@@ -130,24 +131,8 @@
 title="To rotate Uplink click on active Uplink
 Click on next and inactive uplink to change rotation sens">Uplink <img src="Contracts/Uplink.png" width="30" height="30"></button>
                 <button type="button" class="btn btn-dark" onclick="power_up()">Power Up <img src="Contracts/Power_Up.png" width="30" height="30"></button>
-                <div class="btn-group">
-                  <button type="button" class="btn btn-dark" onclick="drone()">Drone <img src="Contracts/Drone_Salvage.png" width="30" height="30"></button>
-                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
-                  <div class="dropdown-menu bg-dark text-white">
-                    <a class="dropdown-item" onclick="drone_change_state()">Change state</a><!--modify that, not really good, maybe click on it an then popover and button to change state (icon)-->
-                  </div>
-                </div>
-                <div class="btn-group">
-                  <button type="button" class="btn btn-dark disabled" onclick="pain_train()" disabled>Pain Train <img src="Contracts/Pain_Train.png" width="30" height="30"></button>
-                  <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-                    <span class="sr-only">Toggle Dropdown</span>
-                  </button>
-                  <div class="dropdown-menu bg-dark text-white">
-                    <a class="dropdown-item disabled" onclick="pain_train_change_state()">Change state</a> <!--To loading to in movement to drop chargement-->
-                  </div>
-                </div>
+                <button type="button" class="btn btn-dark" onclick="drone()">Drone <img src="Contracts/Drone_Salvage.png" width="30" height="30"></button>
+                <button type="button" class="btn btn-dark" onclick="pain_train()">Pain Train <img src="Contracts/Pain_Train.png" width="30" height="30"></button>
               </li>
               <!--Event Contracts-->
               <li class="list-group-item">
@@ -175,7 +160,6 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
               <!--Debug-->
               <li class="list-group-item" id="debug_li" style="display: none;">
                 <button type="button" class="btn btn-dark" onclick="add_debug()">Add Debug <img src="Players/ruthless.png" width="30" height="30"></button>
-                <button type="button" class="btn btn-dark" onclick="save_debug()">Save coordinate </button>
               </li>
             </ul>
         </div>
@@ -203,13 +187,11 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
                        {Contract_name: 'Uplink', Is_active: false},
                        {Contract_name: 'Power_Up', Is_active: false, status: {number_power_up: 0}},
                        {Contract_name: 'Drone', Is_active: false, status: {number_drone: 0}},
-                       {Contract_name: 'Pain_Train', Is_active: false},
+                       {Contract_name: 'Pain_Train', Is_active: false, status: {number_train: 0}},
                        {Contract_name: 'Central_Station', Is_active: false},
                        {Contract_name: 'Alpha_Warden', Is_active: false},
                        {Contract_name: 'Cycle_spike', Is_active: false},
-                       {Contract_name: 'Evacuation', Is_active: false, clear: false}];
-                       //see if we add uplink + add in each function something that manage number of active contracts (if we try to add more than 4 : alert (forbidden))
-                       // if we do that allow user to unactivate each contracts ()
+                       {Contract_name: 'Evacuation', Is_active: false}];
 
       var tab_marker = L.layerGroup();
 
@@ -275,7 +257,7 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         contracts.find(e => e.Contract_name === 'Zeal').status.Red = false;
         contracts.find(e => e.Contract_name === 'Power_Up').status.number_power_up = 0;
         contracts.find(e => e.Contract_name === 'Power_Up').status.number_drone = 0;
-        contracts.find(e => e.Contract_name === 'Evacuation').clear = false;
+        contracts.find(e => e.Contract_name === 'Pain_Train').status.number_train = 0;
 
         power_up_coord.map01.forEach(e => {
           e.is_active = false;
@@ -365,15 +347,6 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
           }
         }
 
-        //Zeal
-        if(contract_combinations[contract_choosen].activity_set_id.includes('Zeal') == true){
-          for (let i = 0; i < 3; i++) {
-            x = Math.round(Math.random() * (700 - 300)) + 300;
-            y = Math.round(Math.random() * (700 - 300)) + 300;
-            zeal(x, y);              
-          }
-        }
-
         //Letium
         if(contract_combinations[contract_choosen].activity_set_id.includes('Letium') == true){
           num_minerals = 40;
@@ -415,6 +388,15 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
           //Maybe have spawn location in array
           minerals_white();
           minerals_white();
+
+          //Zeal
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Zeal') == true){ //Spawn 2 orange Zeal
+            for (let i = 1; i <= 2; i++) {
+              x = Math.round(Math.random() * (700 - 300)) + 300;
+              y = Math.round(Math.random() * (700 - 300)) + 300;
+              zeal(x, y);              
+            }
+          }
 
           //Power up
           if(contract_combinations[contract_choosen].activity_set_id.includes('Power') == true){
@@ -479,9 +461,16 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
             }
           }
 
-          //@PAINTRAIN
+          //Pain_Train
           if(contract_combinations[contract_choosen].activity_set_id.includes('Train') == true){
-            //loading or in transit
+            if(num_map == 1){
+              pain_train(793, 451);
+              pain_train(296, 777);
+            }
+            else if(num_map == 2){
+              pain_train(812, 425);
+              pain_train(255, 256);
+            }
           }
 
           //...
@@ -495,6 +484,18 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
             x = Math.round(Math.random() * (900 - 100)) + 100;
             y = Math.round(Math.random() * (900 - 100)) + 100;
             minerals(x, y);           
+          }
+
+          //Zeal
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Zeal') == true){ //Spawn 2 orange Zeal + Red Zeal
+            for (let i = 1; i <= 2; i++) {
+              x = Math.round(Math.random() * (700 - 300)) + 300;
+              y = Math.round(Math.random() * (700 - 300)) + 300;
+              zeal(x, y);              
+            }
+            x = Math.round(Math.random() * (700 - 300)) + 300;
+            y = Math.round(Math.random() * (700 - 300)) + 300;
+            zeal_red(x, y);
           }
 
           //Power up
@@ -563,7 +564,14 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
 
           //@PAINTRAIN
           if(contract_combinations[contract_choosen].activity_set_id.includes('Train') == true){
-            //unloading or in transit
+            if(num_map == 1){
+              pain_train(521, 527);
+              pain_train(474, 339);
+            }
+            else if(num_map == 2){
+              pain_train(607, 423);
+              pain_train(533, 510);
+            }
           }
 
           //If power station > 5 add chance to spawn central station (40%)
@@ -611,6 +619,18 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
             x = Math.round(Math.random() * (900 - 100)) + 100;
             y = Math.round(Math.random() * (900 - 100)) + 100;
             minerals(x, y);
+          }
+
+          //Zeal
+          if(contract_combinations[contract_choosen].activity_set_id.includes('Zeal') == true){ //Spawn 2 orange Zeal + Red Zeal
+            for (let i = 1; i <= 2; i++) {
+              x = Math.round(Math.random() * (700 - 300)) + 300;
+              y = Math.round(Math.random() * (700 - 300)) + 300;
+              zeal(x, y);              
+            }
+            x = Math.round(Math.random() * (700 - 300)) + 300;
+            y = Math.round(Math.random() * (700 - 300)) + 300;
+            zeal_red(x, y);
           }
 
           //Power up
@@ -1087,11 +1107,50 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         }
       }
       function change_drone_state(marker){
+        let drone_salvage_icon = L.icon({
+          iconUrl: 'Contracts/Drone_Salvage.png',
+          iconSize: [60,60]
+          });
+        let drone_launch_icon = L.icon({
+            iconUrl: 'Contracts/Drone_Launch.png',
+            iconSize: [80, 80]
+        });
 
+        //@TODO Fix with custom id because always change state from the last icon added
+        if(marker.getIcon().options.iconUrl === 'Contracts/Drone_Salvage.png'){
+          marker.setIcon(drone_launch_icon);
+        }
+        else{
+          marker.setIcon(drone_salvage_icon);
+        }
       }
 
-      function pain_train(){
-        alert('Stop hacking this website !');
+      function pain_train(x,y){
+        if((contracts.find(e => e.Contract_name === 'Pain_Train').status.number_train >= 2) && !(document.getElementById('unlimited').checked)){
+          alert("You can't add more than 2 Train on the map !\nDouble click on a contracts to delete it");
+        }
+        else{
+          let pain_train_icon = L.icon({
+          iconUrl: 'Contracts/Pain_Train.png',
+          iconSize: [60,60]
+          });
+
+          if(x != null && y != null){
+            var spawn = [x,y];
+          }
+          else{
+            var spawn = marker_spawn_location;
+          }
+
+          marker = L.marker(spawn, {icon: pain_train_icon, draggable: true}).addTo(map);
+          tab_marker.addLayer(marker);
+          contracts.find(e => e.Contract_name === 'Pain_Train').status.number_train += 1;
+          marker.on('click', function(e){change_train_state(marker)});
+          marker.on('dblclick', function(e){delete_icon(marker); contracts.find(e => e.Contract_name === 'Pain_Train').status.number_train -= 1;});
+        }
+      }
+      function change_train_state(marker){
+
       }
 
       function central_station(){
@@ -1207,14 +1266,11 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
             iconUrl: 'Contracts/EvacuationGreen.png',
             iconSize: [80, 80]
         });
-
-        if(contracts.find(e => e.Contract_name === 'Evacuation').clear == false){
+        if(marker.getIcon().options.iconUrl === 'Contracts/Evacuation.png'){
           marker.setIcon(evac_icon_clear);
-          contracts.find(e => e.Contract_name === 'Evacuation').clear = true;
         }
         else{
           marker.setIcon(evac_icon);
-          contracts.find(e => e.Contract_name === 'Evacuation').clear = false;
         }        
       }
 
@@ -1381,10 +1437,10 @@ Click on next and inactive uplink to change rotation sens">Uplink <img src="Cont
         });
 
         marker = L.marker(marker_spawn_location, {icon: debug_icon, draggable: true}).addTo(map);
-        tab_marker.push({Marker: marker, Marker_name: 'Debug'});
+        tab_marker.addLayer(marker);
+        marker.on('click', function(e){save_debug(marker)});
       }
-      function save_debug(){
-        marker = tab_marker.find(e => e.Marker_name === "Debug").Marker;
+      function save_debug(marker){
         console.log('Map: ', num_map, ' Coordinate: ', [Math.round(marker._latlng.lat), Math.round(marker._latlng.lng)]);
       }
     </script>
