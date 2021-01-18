@@ -19,10 +19,10 @@ You can drag and drop item on the map. You can't do that on evacuation, uplink, 
 * Better random map generator
 * Better uplink next icon
 * Multi-language support (Mostly French 🥖)
+* Better pain train management  
 
 ## Things that doesn't work currently : ##  
 
-* Pain Train
 * Uplink rotation on random map (it change with drone or power station)
-* Change state of drones (Pick up / Launching)
 * Delete a specific contracts (Possible fix : Leaflet unique id for each icon)
+* Change drone state (Possible fix : Leaflet unique id for each icon)  
