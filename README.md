@@ -4,4 +4,4 @@
 * [Guide d'utilisation en français](README_FR.md)  
 
 
-**Website no longer updated because the game no longer exist*
+**Website no longer updated because the game no longer exist**
